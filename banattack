@@ -1,0 +1,16 @@
+#!/bin/sh
+#netstat -na|awk '$5 ~ /[0-9]+:[0-9]+/ {print $5}' |awk -F ":" -- '{print $1}' |sort -n|uniq -c |sort -n|tail -n 10
+
+status=`netstat -na|awk '$5 ~ /[0-9]+:[0-9]+/ {print $5}' |awk -F ":" -- '{print $1}' |sort -n|uniq -c |sort -n|tail -n 1`
+NUM=`echo $status|awk '{print $1}'`
+IP=`echo $status|awk '{print $2}'`
+result=`echo "$NUM > 100" | bc`
+if [ $result = 1 ] 
+then
+  echo IP:$IP is over $NUM, BAN IT!
+  /sbin/iptables -D INPUT -s $IP -j DROP
+  /sbin/iptables -I INPUT -s $IP -j DROP
+  #enable spider address
+  #/sbin/iptables -D INPUT -s 8.89.9.9 -j DROP
+fi
+
